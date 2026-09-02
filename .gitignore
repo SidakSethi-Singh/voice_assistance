@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Environment Variables (Keep API keys private)
+.env
+!.env.example
+
+# Pytest / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases & local data
+data/reminders.db
+*.db
+*.sqlite3
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

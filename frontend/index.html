@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether — Real-Time Voice Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Ambient Background Glows -->
+    <div class="glow-orb glow-top-left"></div>
+    <div class="glow-orb glow-bottom-right"></div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>AETHER</h1>
+          <span class="badge-tag">STREAMING VOICE v1.0</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Wake Word Toggle Button -->
+        <button class="wake-word-btn active" id="toggleWakeWordBtn" title="Hands-free Wake-Word ('Hey Aether')">
+          <span class="wake-dot"></span>
+          <span class="wake-label">WAKE WORD: ON</span>
+        </button>
+
+        <!-- Status Indicator Pill -->
+        <div class="status-pill status-idle" id="statusPill">
+          <span class="status-dot"></span>
+          <span class="status-label" id="statusText">IDLE</span>
+        </div>
+
+        <button class="icon-button" id="openSettingsBtn" title="API Keys & Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-layout">
+      <!-- Left Column: Visualizer Orb & Voice Controls -->
+      <section class="visualizer-card glass-panel">
+        <div class="visualizer-wrapper">
+          <div class="orb-container" id="orbContainer">
+            <div class="voice-orb" id="voiceOrb">
+              <div class="inner-core"></div>
+              <div class="pulse-ring ring-1"></div>
+              <div class="pulse-ring ring-2"></div>
+              <div class="pulse-ring ring-3"></div>
+            </div>
+          </div>
+
+          <!-- Real-Time Audio Canvas -->
+          <canvas id="waveformCanvas" width="480" height="90"></canvas>
+        </div>
+
+        <!-- Voice Interaction Controls -->
+        <div class="controls-area">
+          <button class="main-voice-btn" id="toggleVoiceBtn">
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="micIconSvg">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </span>
+            <span class="btn-text" id="toggleVoiceText">Start Voice Session</span>
+          </button>
+
+          <button class="interrupt-btn" id="bargeInBtn" title="Simulate / Trigger Barge-In Interruption" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="4" width="4" height="16"/>
+              <rect x="14" y="4" width="4" height="16"/>
+            </svg>
+            <span>Interrupt</span>
+          </button>
+        </div>
+
+        <!-- Latency Telemetry HUD -->
+        <div class="telemetry-bar">
+          <div class="telemetry-item">
+            <span class="tel-label">STT Final</span>
+            <span class="tel-val" id="telStt">-- ms</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="tel-label">LLM TTFT</span>
+            <span class="tel-val" id="telLlm">-- ms</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="tel-label">TTS TTFB</span>
+            <span class="tel-val" id="telTts">-- ms</span>
+          </div>
+          <div class="telemetry-item highlight">
+            <span class="tel-label">Total Round-Trip</span>
+            <span class="tel-val" id="telTotal">-- ms</span>
+          </div>
+        </div>
+
+        <!-- Typed Input Fallback / Direct Prompt Bar -->
+        <div class="prompt-bar">
+          <input type="text" id="textPromptInput" placeholder="Or type a command (e.g. 'What is the weather in Paris?')" />
+          <button id="sendPromptBtn">Send</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Conversation Stream & Tool Inspector -->
+      <section class="transcript-card glass-panel">
+        <div class="panel-header">
+          <h2>Live Dialogue & Tools</h2>
+          <span class="live-tag"><span class="blink-dot"></span> REALTIME STREAM</span>
+        </div>
+
+        <div class="conversation-feed" id="conversationFeed">
+          <div class="system-bubble">
+            ✨ Assistant is ready. Click "Start Voice Session" and speak naturally into your microphone.
+          </div>
+        </div>
+
+        <!-- Live Partial STT Display -->
+        <div class="partial-transcript-bar" id="partialTranscriptBar">
+          <span class="partial-icon">🎤</span>
+          <span class="partial-text" id="partialTranscriptText">Listening for speech...</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsModal">
+      <div class="modal-card glass-panel">
+        <div class="modal-header">
+          <h3>Assistant Configuration</h3>
+          <button class="close-modal-btn" id="closeSettingsBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="inputDeepgramKey">Deepgram API Key (STT)</label>
+            <input type="password" id="inputDeepgramKey" placeholder="Token from console.deepgram.com" />
+            <small>Used for streaming live microphone audio to Nova-2 STT with real-time VAD.</small>
+          </div>
+          <div class="form-group">
+            <label for="inputGeminiKey">Gemini API Key (LLM & Function Calling)</label>
+            <input type="password" id="inputGeminiKey" placeholder="Key from aistudio.google.com" />
+            <small>Powers conversational tool calling and streaming responses.</small>
+          </div>
+          <div class="form-group">
+            <label for="inputElevenLabsKey">ElevenLabs API Key (Streaming TTS)</label>
+            <input type="password" id="inputElevenLabsKey" placeholder="Key from elevenlabs.io" />
+            <small>Streams progressive audio chunks back to Web Audio player.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" id="cancelSettingsBtn">Cancel</button>
+          <button class="primary-btn" id="saveSettingsBtn">Save & Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/audio_recorder.js"></script>
+  <script src="/static/js/audio_player.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
